@@ -1,0 +1,101 @@
+<form>
+  <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+  <div class="relative m-4">
+    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+      <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+        fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+      </svg>
+    </div>
+    <input type="search" id="username-search" (keypress)="handleSearch($event)"
+      class="block w-full pl-10 pr-10 pt-2 pb-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      placeholder="enter valid github username" required>
+  </div>
+</form>
+
+
+<!-- profile section-->
+
+<div class="mb-8 p-6">
+  <div *ngIf="loadingprofile; else profileContent" class="skeleton-loader">
+    <div class="row">
+      <div class="col-md-2 flex items-center justify-center">
+        <img class="rounded-full skeleton-image">
+      </div>
+      <div class="col ml-16">
+        <div class="row py-2 mt-16 skeleton-line"></div>
+        <div class="row skeleton-line"></div>
+        <div class="row py-4 skeleton-line"></div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template #profileContent>
+  <div class="row">
+    <div class="col-md-2 flex items-center justify-center">
+      <img class="rounded-full" [src]=profile.avatar_url alt="wait a minute please :- ">
+    </div>
+    <div class=" col ml-16">
+      <div class="row py-2 mt-16">
+        <h3>{{profile.name}}</h3>
+      </div>
+      <div class="row ">
+        <p>{{profile.bio}}</p>
+      </div>
+      
+    </div>
+  </div>
+  </ng-template>
+
+  <!-- Size change -->
+  <div class="flex justify-end mr-10">
+    <select (change)="onTableSizeChange($event)" class="border border-black text-lg">
+        <option *ngFor="let size of tableSizes">
+            {{size}}
+        </option>
+    </select>
+</div>
+
+
+  <!-- repos list -->
+  <div *ngIf="loadingrepo; else repoContent" class="skeleton-loader">
+      <div class="row">
+        <div class="col-md-6" *ngFor="let repo of repos | paginate:{ itemsPerPage: tableSize,
+            currentPage: page,
+            totalItems: count}; let i = index">
+          <div class="col flex flex-col mb-2 h-40 box skeleton-box">
+            <div class="row m-2 skeleton-line"></div>
+            <div class="row m-2 skeleton-line"></div>
+            <div class="row m-2 skeleton-line"></div>
+          </div>
+        </div>
+        <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+        </pagination-controls>
+      </div>
+  </div>
+  
+
+  <ng-template #repoContent>
+    <div class="row">
+      <div class="col-md-6" *ngFor="let repo of repos | paginate:{ itemsPerPage: tableSize,
+          currentPage: page,
+          totalItems: count}; let i = index">
+        <div class="col flex flex-col mb-2 h-40 box ">
+          <div class="row m-2">
+            <h5 class="text-blue-500">{{repo.name}}</h5>
+          </div>
+          <div class="row m-2 description">
+            <p>{{repo.description}}</p>
+          </div>
+          <div class="row m-2">
+            <div *ngFor="let language of repo.languages" class="inline-block bg-blue-200 text-blue-700 rounded-full px-2 py-1 mr-1">
+              {{language}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <pagination-controls previousLabel="Prev" nextLabel="Next" (pageChange)="onTableDataChange($event)">
+      </pagination-controls>
+    </div>
+  </ng-template>
